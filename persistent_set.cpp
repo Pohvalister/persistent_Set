@@ -216,11 +216,11 @@ void persistent_set::iterator::find_left(iterator &it) {//left, then the rightes
             it.point = it.point->right;
         }
     } else {
-        it.point = it.lowerParents.top();
         while (it.upperParents.size()==0&&it.allParents.top()==it.upperParents.top()) {
             it.upperParents.pop();
             it.allParents.pop();
         }
+        it.point = it.lowerParents.top();
         it.lowerParents.pop();
         it.allParents.pop();
     }
@@ -237,11 +237,11 @@ void persistent_set::iterator::find_right(iterator &it) {//right, then the leftt
             it.point = it.point->left;
         }
     } else {
-        it.point = it.upperParents.top();
         while (it.lowerParents.size()!=0&&it.allParents.top()==it.lowerParents.top()){
             it.allParents.pop();
             it.lowerParents.pop();
         }
+        it.point = it.upperParents.top();
         it.upperParents.pop();
         it.allParents.pop();
     }
@@ -264,7 +264,6 @@ persistent_set::iterator &persistent_set::iterator::operator++() {
     check_valid();
     assert(point != refer->dock);
     find_right(*this);
-    point->users++;
     return *this;
 }
 
@@ -276,7 +275,6 @@ persistent_set::iterator persistent_set::iterator::operator++(int) {
 persistent_set::iterator &persistent_set::iterator::operator--() {
     check_valid();
     find_left(*this);
-    point->users++;
     return *this;
 }
 
