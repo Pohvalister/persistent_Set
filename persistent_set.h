@@ -1,11 +1,13 @@
 #ifndef PERSISTENTSET_PERSISTENT_SET_H
 #define PERSISTENTSET_PERSISTENT_SET_H
-
 #include <cstdint>
 #include <utility>
 #include <cstdlib>
 #include <stack>
+#include <memory>
 
+#define sp std::shared_ptr<node>
+#define spp std::shared_ptr<persistent_set::node>
 // Вы можете определить этот тайпдеф по вашему усмотрению.
 typedef int32_t value_type;
 
@@ -26,7 +28,7 @@ struct persistent_set {
     // Деструктор. Вызывается при удалении объектов persistent_set.
     // Инвалидирует все итераторы ссылающиеся на элементы этого persistent_set
     // (включая итераторы ссылающиеся на элементы следующие за последними).
-    ~persistent_set();
+    ~persistent_set(){};
 
     // Поиск элемента.
     // Возвращает итератор на элемент найденный элемент, либо end().
@@ -52,53 +54,41 @@ struct persistent_set {
 
 private:
     struct node {
-        uint64_t users = 0;
+        int64_t users = 0;
         value_type val;
-        node *left;
-        node *right;
+        sp left;
+        sp right;
 
-        /*node *next;
-        node *prev;*/
-        node(uint64_t u) {
-            left = right = nullptr;
-            users = u;
+        node() {
+            left;
+            right;
         }
-
-        node(node *l, node *r, value_type v) {
-            users = 0;
+        node (value_type x){
+            val=x;
+            left;
+            right;
+        }
+        node(sp l, sp r, value_type v) {
             val = v;
             left = l;
-            if (l != nullptr)
-                l->users++;
-
             right = r;
-            if (r != nullptr)
-                r->users++;
         }
     };
 
-    node *base;//корень дерева
-    node *dock;//последняя вершина
+    sp base;//корень дерева
+    sp dock;//последняя вершина
     uint64_t surety;//гарантия вал// идности итераторов
-    static void connect(node *);
 
-    static void disconnect(node *);
+    iterator find_in_child(sp, value_type);
 
-    iterator find_in_child(node *, value_type);
-
-    std::pair<node *, node *> createImage(std::stack<node *>, std::stack<node *>, std::stack<node *>);
+    std::pair<sp, sp> createImage(std::stack<sp>&, std::stack<sp>&, std::stack<sp>&);
 };
 
 struct persistent_set::iterator {
-    iterator(node *p, persistent_set *r, uint64_t c) {
+    iterator(sp p, persistent_set *r, uint64_t c) {
         point = p;
-        p->users++;
         refer = r;
         check = c;
-    }
-
-    ~iterator() {
-        disconnect(point);
     }
 
     // Элемент на который сейчас ссылается итератор.
@@ -124,10 +114,10 @@ struct persistent_set::iterator {
 
     friend struct persistent_set;
 private:
-    node *point;
-    std::stack<node *> upperParents;
-    std::stack<node *> lowerParents;
-    std::stack<node *> allParents;
+    sp point;
+    std::stack<sp> upperParents;
+    std::stack<sp> lowerParents;
+    std::stack<sp> allParents;
 
     static void find_right(iterator &);
 
