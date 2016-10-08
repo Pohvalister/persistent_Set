@@ -18,7 +18,7 @@ int main() {
     a.insert(20);
     persistent_set b = a;
     persistent_set c(a);
-    int iter = 10000;
+    int iter = 1000;
     for (int i = 0; i < iter; i++) {
         a.insert((value_type) rand1());
         b.insert((value_type) rand1());
@@ -40,14 +40,16 @@ int main() {
     std::random_shuffle(answ.begin(), answ.end());
     persistent_set e(d);
     persistent_set f = d;
-    for (int i = 0; i < iter; i++) {
+    auto o = e.begin();
+    for (int i = 0; i < iter; i++) { ;
+        cout<<*d.find(answ[i])<<'\n';
         d.erase(d.find(answ[i]));
     }
-    auto i = e.begin();
     auto k = f.end();
     for (int j = 0; j < iter; j++) {
-        i++;
         k--;
     }
 
 }
+
+

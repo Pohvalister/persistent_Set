@@ -28,7 +28,7 @@ persistent_set::iterator persistent_set::find_in_child(sp from, value_type x) {
     iterator tmp(from, this, surety);
     while (true) {
         if (tmp.point == dock || tmp.point->val > x) {
-            if (tmp.point->left == nullptr)
+            if (!tmp.point->left)
                 return tmp;
             else {
                 tmp.upperParents.push(tmp.point);
@@ -41,7 +41,7 @@ persistent_set::iterator persistent_set::find_in_child(sp from, value_type x) {
             return tmp;
         }
         if (tmp.point->val < x) {
-            if (tmp.point->right == nullptr) {
+            if (!tmp.point->right) {
                 return tmp;
             } else {
                 tmp.lowerParents.push(tmp.point);
@@ -138,14 +138,14 @@ void persistent_set::erase(iterator target) {
         isImageEndsReal = true;
     }
     ////если уже можно подставить
-    if (target.point->left == nullptr) {
+    if (!target.point->left) {
         if (imageEnds.first->left == target.point) {
             imageEnds.first->left = target.point->right;
         } else {
             imageEnds.first->right = target.point->right;
         }
     }
-    if (target.point->right == nullptr && target.point->left != nullptr) {
+    if (!target.point->right  && target.point->left) {
         if (imageEnds.first->left == target.point) {
             imageEnds.first->left = target.point->left;
         } else {
@@ -153,7 +153,7 @@ void persistent_set::erase(iterator target) {
         }
     }
     ////если нельзя
-    if (target.point->left != nullptr && target.point->right != nullptr) {
+    if (target.point->left && target.point->right ) {
         iterator tmp = find_in_child(target.point->right,
                                      target.point->left->val);//спускаемся до конца правой в левую сторону
         if (tmp.allParents.size() == 0) {//когда слишком рядом
@@ -183,7 +183,7 @@ void persistent_set::erase(iterator target) {
 persistent_set::iterator persistent_set::begin() {//!!!!
     iterator tmp(base, this, surety);
 
-    while (tmp.point->left != nullptr) {
+    while (tmp.point->left) {
         tmp.upperParents.push(tmp.point);
         tmp.allParents.push(tmp.point);
         tmp.point = tmp.point->left;
@@ -195,7 +195,7 @@ persistent_set::iterator persistent_set::begin() {//!!!!
 persistent_set::iterator persistent_set::end() {
     iterator tmp(base, this, surety);
 
-    while (tmp.point->right != nullptr) {
+    while (tmp.point->right) {
         tmp.lowerParents.push(tmp.point);
         tmp.allParents.push(tmp.point);
         tmp.point = tmp.point->right;
@@ -206,11 +206,11 @@ persistent_set::iterator persistent_set::end() {
 
 ///////////////////////
 void persistent_set::iterator::find_left(iterator &it) {//left, then the rightest or parents right
-    if (it.point->left != nullptr) {
+    if (it.point->left) {
         it.upperParents.push(it.point);
         it.allParents.push(it.point);
         it.point = it.point->left;
-        while (it.point->right != nullptr) {
+        while (it.point->right) {
             it.lowerParents.push(it.point);
             it.allParents.push(it.point);
             it.point = it.point->right;
@@ -223,11 +223,11 @@ void persistent_set::iterator::find_left(iterator &it) {//left, then the rightes
 }
 
 void persistent_set::iterator::find_right(iterator &it) {//right, then the lefttest or parents left
-    if (it.point->right != nullptr) {
+    if (it.point->right) {
         it.lowerParents.push(it.point);
         it.allParents.push(it.point);
         it.point = it.point->right;
-        while (it.point->left != nullptr) {
+        while (it.point->left) {
             it.upperParents.push(it.point);
             it.allParents.push(it.point);
             it.point = it.point->left;
@@ -241,8 +241,8 @@ void persistent_set::iterator::find_right(iterator &it) {//right, then the leftt
 
 ///////////////////////
 inline bool persistent_set::iterator::check_valid() const {
-    assert(point != nullptr);
-    assert(refer != nullptr);
+    assert(point );
+    assert(refer );
     assert(check == refer->surety);
     return true;
 }
