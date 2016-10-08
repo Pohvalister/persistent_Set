@@ -217,6 +217,10 @@ void persistent_set::iterator::find_left(iterator &it) {//left, then the rightes
         }
     } else {
         it.point = it.lowerParents.top();
+        while (it.upperParents.size()==0&&it.allParents.top()==it.upperParents.top()) {
+            it.upperParents.pop();
+            it.allParents.pop();
+        }
         it.lowerParents.pop();
         it.allParents.pop();
     }
@@ -234,6 +238,10 @@ void persistent_set::iterator::find_right(iterator &it) {//right, then the leftt
         }
     } else {
         it.point = it.upperParents.top();
+        while (it.lowerParents.size()!=0&&it.allParents.top()==it.lowerParents.top()){
+            it.allParents.pop();
+            it.lowerParents.pop();
+        }
         it.upperParents.pop();
         it.allParents.pop();
     }
