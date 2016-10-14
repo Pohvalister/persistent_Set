@@ -28,7 +28,7 @@ int main() {
     x--;
 
     auto y = c.begin();
-    cout << (*c.find(*c.begin()));
+    cout << (*c.find(*c.begin()))<<'\n';
 
     persistent_set d;
     std::vector<value_type> answ;
@@ -40,15 +40,30 @@ int main() {
     std::random_shuffle(answ.begin(), answ.end());
     persistent_set e(d);
     persistent_set f = d;
-    auto o = e.begin();
-    for (int i = 0; i < iter; i++) { ;
-        cout<<*d.find(answ[i])<<'\n';
+    for (int i = 0; i < iter; i++) {
+
+        //cout<<*d.find(answ[i])<<'\n';
         d.erase(d.find(answ[i]));
     }
-    auto k = f.end();
-    for (int j = 0; j < iter; j++) {
-        k--;
+    int iter2=20;
+    persistent_set op;
+    answ.clear();
+    for (int i = 0; i < iter2; i++) {
+        value_type z = (value_type) rand1();
+        op.insert((z));
+        answ.push_back(z);
     }
+    auto o1=op.begin();
+    auto o2=op.end();
+    for (int i=0;i<iter2;i++){
+        o2--;
+        cout<<i<<") "<<*o1<<' '<<*o2<<'\n';
+        o1++;
+    }
+    std::sort(answ.begin(),answ.end());
+    for (int i=0;i<iter2;i++)
+        cout<<answ[i]<<' ';
+
 
 }
 
